@@ -2,7 +2,7 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from accounts.models import TeacherProfile, User, StudentProfile
-from accounts.permissions import IsAdminUser
+from accounts.permissions import IsAdminUser, IsVerifiedTeacher
 from .serializers import RegisterSerializer, StudentProfileSerializer, TeacherProfileSerializer
 from rest_framework.permissions import AllowAny
 from rest_framework import generics, status
@@ -27,13 +27,11 @@ class ProfileUpdateView(generics.UpdateAPIView):
 
     def get_object(self):
         user = self.request.user
-        try:
-            if user.role == 'teacher':
-                return user.teacher_profile
-            elif user.role == 'student':
-                return user.student_profile
-        except (AttributeError, User.teacher_profile.RelatedObjectDoesNotExist, User.student_profile.RelatedObjectDoesNotExist):
-            return None
+        if user.role == 'teacher':
+            # hasattr use kora safe practice
+            return getattr(user, 'teacher_profile', None)
+        elif user.role == 'student':
+            return getattr(user, 'student_profile', None)
         return None
 
     def get_serializer_class(self):
@@ -82,3 +80,23 @@ class AdminVerifyTeacherView(APIView):
             return Response({"status": "success", "is_verified": teacher.is_verified})
         except TeacherProfile.DoesNotExist:
             return Response({"error": "Teacher not found"}, status=404)
+        
+class TeacherProfileSubmitView(generics.UpdateAPIView):
+    serializer_class = TeacherProfileUpdateSerializer # Age banano serializer-e field gulo add kore nio
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user.teacher_profile
+
+    def perform_update(self, serializer):
+        # Form submit korle is_submitted True hoye jabe
+        serializer.save(is_submitted=True)
+
+class TeacherDashboardView(APIView):
+    permission_classes = [IsVerifiedTeacher]
+
+    def get(self, request):
+        return Response({
+            "message": "Welcome to Teacher Dashboard!",
+            "data": "Only verified teachers can see this."
+        })

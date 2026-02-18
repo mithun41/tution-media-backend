@@ -1,6 +1,7 @@
 python -m pip freeze > requirements.txt
-
-
+git clone <your-repo-url>
+cd Al-Faraj
+python -m venv venv
 
 
 git pull

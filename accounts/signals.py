@@ -6,9 +6,9 @@ from .models import User, TeacherProfile, StudentProfile
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
         if instance.role == 'teacher':
-            TeacherProfile.objects.get_or_create(user=instance)
+            TeacherProfile.objects.create(user=instance)
         elif instance.role == 'student':
-            StudentProfile.objects.get_or_create(user=instance)
+            StudentProfile.objects.create(user=instance)
 
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):

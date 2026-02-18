@@ -5,8 +5,9 @@ admin.site.register(User)
 
 @admin.register(TeacherProfile)
 class TeacherProfileAdmin(admin.ModelAdmin):
-    list_display = ['user', 'is_verified', 'experience']
-    list_filter = ['is_verified']
+    # Ekhane experience field-ta thaka jabe na
+    list_display = ['user', 'full_name', 'is_verified', 'is_submitted']
+    list_filter = ['is_verified', 'is_submitted']
     actions = ['approve_teachers']
 
     def approve_teachers(self, request, queryset):
