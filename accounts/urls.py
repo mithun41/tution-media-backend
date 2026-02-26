@@ -29,3 +29,4 @@ urlpatterns = [
     path('admin/students/', AdminStudentListView.as_view(), name='admin_student_list'),
     path('admin/teacher-verify/<int:pk>/', AdminVerifyTeacherView.as_view(), name='admin_teacher_verify'),
 ]
+# comment: "Ei URLs gulo accounts app er jonno, jekhane authentication, profile management, teacher verification, and admin controls er jonno endpoints define kora hoyeche."
